@@ -4,6 +4,8 @@ import { BsInfoCircle } from "react-icons/bs";
 import { Loader } from "./";
 
 import "./Welcome.css";
+import { useContext } from "react";
+import { TransactionContext } from "../context/TransactionContext";
 
 const commonProp = "text-white border flex-[1_1_auto] w-20 text-center py-3 sm:py-5";
 
@@ -13,12 +15,23 @@ const Input = ({placeholder, value, type, name, onClickHandler}) => (
   type = {type}
   value= {value}
   step="0.00001"
-  onClick={(e) => onClickHandler(e, name)}
+  onChange={(e) => onClickHandler(e, name)}
   className="bg-transparent border-none text-white my-2 white-glassmorphism p-3 rounded-none"
   />
 )
 
 const Welcome = () => {
+
+  const { connectWallet, connectedAccount, formData, handleChange, sendTransactions } = useContext(TransactionContext);
+
+  const handleSubmit = (e) => {
+    const {addressTo, amount, keyword, message } = formData;
+    e.preventDefault;
+
+    if(!addressTo || !amount || !keyword || !message ) return;
+    sendTransactions();
+  }
+
   return (
     <section className="flex md:flex-row flex-col w-full justify-center gap-10 sm:gap-0 items-center py-10">
       <div className="flex text-white flex-col justify-center sm:items-start flex-[0.5]">
@@ -30,9 +43,11 @@ const Welcome = () => {
           <span>Explore the crypto world. Buy and sell</span> <br />
           <span>cryptocurrencies easily on Krypt</span>
         </div>
-        <div className="w-ful my-5 btn">
-            <span>Connect Wallet</span>
+        {!connectedAccount && (
+            <div className="w-ful my-5 btn">
+            <span onClick={connectWallet}>Connect Wallet</span>
         </div>
+        )}
         <div className="my-6 flex flex-col w-full">
           <div className="flex flex-row px-2 w-full">
             {["Reliability", "Security", "Ethereum"].map( (item, index) => (
@@ -72,14 +87,14 @@ const Welcome = () => {
         </div>
 
         <div className="my-4 md:mt-0 p-5 blue-glassmorphism rounded-3xl md:w-96 w-full flex justify-center flex-col">
-          <Input placeholder="Address to" name="addressTo" type="text" onClickHandler={() => {}} />
-          <Input placeholder="Amount (ETH)"  name="amount" type="number" onClickHandler={() => {}} />
-          <Input placeholder="Message"  name="message" type="text" onClickHandler={() => {}} />
-          <Input placeholder="Keyword"  name="keyword" type="text" onClickHandler={() => {}} />
+          <Input placeholder="Address to" name="addressTo" type="text" onClickHandler={handleChange} />
+          <Input placeholder="Amount (ETH)"  name="amount" type="number" onClickHandler={handleChange} />
+          <Input placeholder="Message"  name="message" type="text" onClickHandler={handleChange} />
+          <Input placeholder="Keyword"  name="keyword" type="text" onClickHandler={handleChange} />
 
           <hr className="my-3" />
 
-          {false ? <Loader /> : <div className="w-full border my-3 rounded-full p-3 text-white text-center">
+          {false ? <Loader /> : <div type="button" onClick={handleSubmit} className="w-full border my-3 rounded-full p-3 text-white text-center cursor-pointer">
               Submit
           </div> }
           
