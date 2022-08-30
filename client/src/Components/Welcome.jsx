@@ -5,6 +5,7 @@ import { Loader } from "./";
 
 import "./Welcome.css";
 import { useContext } from "react";
+import { shortenAddress } from "../utils/shortenAddress";
 import { TransactionContext } from "../context/TransactionContext";
 
 const commonProp = "text-white border flex-[1_1_auto] w-20 text-center py-3 sm:py-5";
@@ -22,7 +23,7 @@ const Input = ({placeholder, value, type, name, onClickHandler}) => (
 
 const Welcome = () => {
 
-  const { connectWallet, connectedAccount, formData, handleChange, sendTransactions } = useContext(TransactionContext);
+  const { connectWallet, connectedAccount, formData, handleChange, sendTransactions, loading } = useContext(TransactionContext);
 
   const handleSubmit = (e) => {
     const {addressTo, amount, keyword, message } = formData;
@@ -51,7 +52,7 @@ const Welcome = () => {
         <div className="my-6 flex flex-col w-full">
           <div className="flex flex-row px-2 w-full">
             {["Reliability", "Security", "Ethereum"].map( (item, index) => (
-              <div className={`${index == 0 ? "rounded-tl-lg" : index == 2 ? "rounded-tr-lg" : ""} ${commonProp}`}>
+              <div key={`${item}__${index}`} className={`${index == 0 ? "rounded-tl-lg" : index == 2 ? "rounded-tr-lg" : ""} ${commonProp}`}>
                 {item}
               </div>
             ))}
@@ -59,7 +60,7 @@ const Welcome = () => {
 
           <div className="flex flex-row px-2 w-full">
             {["Web 3.0", "Low Fees", "Blockchain"].map( (item, index) => (
-              <div className={`${index == 0 ? "rounded-bl-lg" : index == 2 ? "rounded-br-lg" : ""} ${commonProp}`}>
+              <div key={`${item}__${index}`} className={`${index == 0 ? "rounded-bl-lg" : index == 2 ? "rounded-br-lg" : ""} ${commonProp}`}>
                 {item}
               </div>
             ))}
@@ -81,8 +82,8 @@ const Welcome = () => {
           </div>
 
           <div className="flex flex-col">
-            <h4 className='text-sm opacity-90'>Address</h4>
-            <h2 className="text-xl">0xdddfsfd....adsfd</h2>
+            <h4 className='text-sm opacity-90'>Address connected</h4>
+            <h2 className="text-xl">{shortenAddress(connectedAccount)}</h2>
           </div>
         </div>
 
@@ -94,7 +95,7 @@ const Welcome = () => {
 
           <hr className="my-3" />
 
-          {false ? <Loader /> : <div type="button" onClick={handleSubmit} className="w-full border my-3 rounded-full p-3 text-white text-center cursor-pointer">
+          {loading ? <Loader /> : <div type="button" onClick={handleSubmit} className="w-full border my-3 rounded-full p-3 text-white text-center cursor-pointer">
               Submit
           </div> }
           

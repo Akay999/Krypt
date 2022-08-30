@@ -37,12 +37,12 @@ export const TransactionProvider = ({children}) => {
             const availableTransactions = await transactionContract.listAllTransaction();
 
             const structuredTransaction = availableTransactions.map((transaction) => ({
-                addressTo : transaction.reciever,
+                addressTo : transaction.receiver,
                 addressFrom : transaction.sender,
                 timestamp : new Date(transaction.timestamp.toNumber() * 1000).toLocaleString(),
                 message : transaction.message,
                 keyword : transaction.keyword,
-                amount : parseInt(transaction.amount._hex) / (10 ** 18)
+                amount : parseInt(transaction.amount_hex) * (10 ** 18)
             }))
 
             setTransactions(structuredTransaction);
@@ -78,9 +78,9 @@ export const TransactionProvider = ({children}) => {
     const checkIfTransactionExsit = async () => {
         try {
             const transactionContract = getEthereumContract();
-            const transactionCount = await transactionContract.getTransactionCounts();
+            const currenttransactionCount = await transactionContract.getTransactionCounts();
             
-            window.localStorage.setItem("transactionCount", transactionCount);
+            window.localStorage.setItem("transactionCount", currenttransactionCount);
 
         } catch (error) {
             console.log(error);
@@ -106,7 +106,6 @@ export const TransactionProvider = ({children}) => {
 
     const sendTransactions = async () => {
         try {
-            debugger
             if(!ethereum) return alert("Please connect metamask!");
 
             const {addressTo, amount, keyword, message } = formData;
@@ -132,9 +131,9 @@ export const TransactionProvider = ({children}) => {
             console.log(`Success - ${transactionHash.hash}`);
             setLoading(false);
 
-            const transactionCount = await transactionContract.getTransactionCounts();
+            const transactionsCount = await transactionContract.getTransactionCounts();
 
-            setTransactionCount(transactionCount.toNumber());
+            setTransactionCount(transactionsCount.toNumber());
             window.location.reload();
 
         } catch (error) {
@@ -147,7 +146,7 @@ export const TransactionProvider = ({children}) => {
     useEffect(() => {
         checkIfWalletIsConnected();
         checkIfTransactionExsit();
-    }, []);
+    }, [transactionCount]);
 
     return (
         <TransactionContext.Provider value = {{ connectWallet, connectedAccount, formData, setFormData, handleChange, sendTransactions, transactions, loading }}>
